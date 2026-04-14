@@ -21,14 +21,16 @@ This repository provides:
 
 ```bash
 git clone https://github.com/your_username/ST-NKF.git
+```
 
 2. Navigate to the project directory:
 
 ```bash
 cd ST-NKF
+```
 
 3. Install dependencies:
 
 ```bash
 pip install tensorflow numpy pandas
-
+```
