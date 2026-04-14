@@ -101,7 +101,8 @@ class KernelPointProcess:
         if self.spatial_id == "neural":
             cdf_spatial = self.spatial_net(dis_in_nmlz)
             d_v_r = K.gradients(cdf_spatial, dis_in)[0]
-            pdf_spatial = layers.Multiply()([d_v_r, 1.0 / (2 * np.pi * dis_in)])
+            epsilon = 1e-5
+            pdf_spatial = layers.Multiply()([d_v_r, 1.0 / (2 * np.pi * (dis_in + epsilon))])
         elif self.spatial_id == "empirical":
             dis_in_square = layers.Lambda(lambda x: x ** 2)(dis_in)
             pdf_spatial = self.spatial_func(dis_in_square, mags_in_1)
