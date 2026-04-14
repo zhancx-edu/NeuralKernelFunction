@@ -1,17 +1,11 @@
 # ST-NKF: Spatio-Temporal Neural Kernel Point Process for Earthquake Forecasting
 
-ST-NKF is a unified framework for earthquake forecasting based on **Neural Point Processes (NPPs)**. It generalizes the classical Epidemic-Type Aftershock Sequence (ETAS) model by replacing parametric kernels with **neural kernel functions**, enabling flexible and data-driven modeling of seismicity.
+ST-NKF model is a spatiotemporal Neural Point Processes for earthquake forecasting. It generalizes the Epidemic-Type Aftershock Sequence (ETAS) model by replacing parametric kernels with neural kernel functions, enabling flexible and data-driven modeling of seismicity.
 
-This repository provides:
-
-- A modular implementation of **spatio-temporal point process models**
-- Support for both **empirical (ETAS-style)** and **neural kernels**
-- A flexible framework for analyzing **earthquake triggering mechanisms**
-- Tools for **likelihood-based evaluation and benchmarking**
 
 ---
 
-![ST-NKF](img/model.png)
+![ST-NKF](method.jpg)
 
 ---
 
@@ -38,32 +32,81 @@ pip install tensorflow numpy pandas
 
 ## Datasets
 
-This project supports multiple earthquake catalogs commonly used in seismicity modeling. Dataset configurations are defined in `config.py`.
+This study is conducted based on the benchmark datasets provided by the [EarthquakeNPP](https://github.com/ss15859/EarthquakeNPP) framework, which is specifically designed for evaluating Neural Point Process (NPP) models on earthquake forecasting tasks.
 
-### Available datasets
+### EarthquakeNPP Benchmark
+
+EarthquakeNPP is a comprehensive and standardized benchmark for earthquake forecasting, developed to facilitate fair and reproducible comparisons between classical statistical models (e.g., ETAS) and modern neural point process models.
+
+Key characteristics of EarthquakeNPP include:
+
+- **Standardized data processing pipeline**  
+  All datasets are derived from publicly available earthquake catalogs and undergo consistent preprocessing, including spatial, temporal, and magnitude filtering.
+
+- **Diverse seismic regimes**  
+  The datasets cover multiple regions in California, representing realistic operational forecasting scenarios.
+
+- **Wide magnitude range**  
+  Several datasets include low-magnitude earthquakes enabled by dense seismic networks and advanced detection techniques.
+
+- **Benchmark compatibility**  
+  The framework provides ready-to-use training, validation, and testing splits, enabling direct comparison across different models.
+
+- **ETAS baseline integration**  
+  EarthquakeNPP includes a reference implementation of the ETAS model, which is widely used in operational earthquake forecasting by government agencies.
+
+---
+
+### Datasets Used in This Study
+
+We adopt multiple datasets from EarthquakeNPP to evaluate the proposed ST-NKF model:
 
 #### ComCat
-- Source: USGS earthquake catalog  
+- Source: USGS Advanced National Seismic System (ANSS) catalog  
 - Region: California  
+- Dataset: `ComCat_25`  
 - Magnitude threshold: Mw ≥ 2.5  
 
 #### SCEDC
-- Southern California Seismic Network  
-- Magnitude thresholds:
+- Source: Southern California Earthquake Data Center (SCEDC)  
+- Datasets:
   - `SCEDC_20` (Mw ≥ 2.0)  
   - `SCEDC_25` (Mw ≥ 2.5)  
   - `SCEDC_30` (Mw ≥ 3.0)  
 
 #### QTM (Template Matching Catalog)
-- High-resolution seismic catalog  
+- High-resolution catalog constructed via waveform template matching  
 - Regions:
-  - `SanJac`  
-  - `SaltonSea`  
+  - `SanJac_10` (San Jacinto fault zone)  
+  - `SaltonSea_10`  
 - Magnitude threshold: Mw ≥ 1.0  
 
 #### WHITE
-- High-resolution catalog  
+- High-resolution catalog focusing on the San Jacinto fault region  
+- Dataset: `WHITE_06`  
 - Magnitude threshold: Mw ≥ 0.6  
+
+#### ETAS (Synthetic Dataset)
+- Simulated earthquake catalogs generated using the ETAS model  
+- Datasets:
+  - `ETAS_25`  
+  - `ETAS_incomplete_25` (with missing events to mimic post-large-earthquake incompleteness)  
+
+#### Japan_Deprecated
+- Derived from the ANSS ComCat catalog  
+- Included for comparison with previous NPP studies  
+
+---
+
+### Data Usage in This Work
+
+In this study, all datasets are directly adopted from EarthquakeNPP without modification, ensuring:
+
+- Fair comparison with existing NPP models  
+- Consistency with prior benchmark studies  
+- Reproducibility of experimental results  
+
+The same data splits and preprocessing procedures as defined in EarthquakeNPP are used throughout all experiments.
 
 ---
 
