@@ -132,7 +132,7 @@ while True:
         df_modified.loc[idx, 'latitude'] += np.random.uniform(-noise_range, noise_range)
     
     print(f"{len(duplicates)} duplicated points remain. Applying perturbation...")
-
+```
 ---
 
 ## Model
