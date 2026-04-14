@@ -32,28 +32,12 @@ pip install tensorflow numpy pandas
 
 ## Datasets
 
-This study is conducted based on the benchmark datasets provided by the [EarthquakeNPP](https://github.com/ss15859/EarthquakeNPP) framework, which is specifically designed for evaluating Neural Point Process (NPP) models on earthquake forecasting tasks.
+This study is conducted based on the benchmark datasets provided by the [EarthquakeNPP](https://github.com/ss15859/EarthquakeNPP), which is designed for evaluating Neural Point Process (NPP) models on earthquake forecasting tasks.
 
 ### EarthquakeNPP Benchmark
 
-EarthquakeNPP is a comprehensive and standardized benchmark for earthquake forecasting, developed to facilitate fair and reproducible comparisons between classical statistical models (e.g., ETAS) and modern neural point process models.
+EarthquakeNPP is a comprehensive and standardized benchmark for earthquake forecasting, developed to facilitate fair and reproducible comparisons between ETAS and NPPs.
 
-Key characteristics of EarthquakeNPP include:
-
-- **Standardized data processing pipeline**  
-  All datasets are derived from publicly available earthquake catalogs and undergo consistent preprocessing, including spatial, temporal, and magnitude filtering.
-
-- **Diverse seismic regimes**  
-  The datasets cover multiple regions in California, representing realistic operational forecasting scenarios.
-
-- **Wide magnitude range**  
-  Several datasets include low-magnitude earthquakes enabled by dense seismic networks and advanced detection techniques.
-
-- **Benchmark compatibility**  
-  The framework provides ready-to-use training, validation, and testing splits, enabling direct comparison across different models.
-
-- **ETAS baseline integration**  
-  EarthquakeNPP includes a reference implementation of the ETAS model, which is widely used in operational earthquake forecasting by government agencies.
 
 ---
 
@@ -86,27 +70,68 @@ We adopt multiple datasets from EarthquakeNPP to evaluate the proposed ST-NKF mo
 - Dataset: `WHITE_06`  
 - Magnitude threshold: Mw ≥ 0.6  
 
-#### ETAS (Synthetic Dataset)
-- Simulated earthquake catalogs generated using the ETAS model  
-- Datasets:
-  - `ETAS_25`  
-  - `ETAS_incomplete_25` (with missing events to mimic post-large-earthquake incompleteness)  
-
-#### Japan_Deprecated
-- Derived from the ANSS ComCat catalog  
-- Included for comparison with previous NPP studies  
 
 ---
 
 ### Data Usage in This Work
 
-In this study, all datasets are directly adopted from EarthquakeNPP without modification, ensuring:
+The earthquake catalogs provided by EarthquakeNPP have already undergone standardized preprocessing procedures. These include:
 
-- Fair comparison with existing NPP models  
-- Consistency with prior benchmark studies  
-- Reproducibility of experimental results  
+- Projection of geographic coordinates into a planar coordinate system  
+- Estimation of the magnitude of completeness for each catalog  
+- Filtering of events to retain only earthquakes above the completeness threshold  
 
-The same data splits and preprocessing procedures as defined in EarthquakeNPP are used throughout all experiments.
+These preprocessing steps ensure data consistency and reliability across different datasets.
+
+---
+
+### Additional Processing: Spatial Perturbation
+
+In this work, we further introduce a small spatial perturbation to events that share identical locations in the catalog.
+
+In real earthquake catalogs, multiple events may be recorded with exactly the same coordinates due to limited spatial resolution or rounding during preprocessing. However, such duplicated locations can lead to numerical instability in spatial kernel estimation, especially for neural models.
+
+To address this issue, we add a small uniform random perturbation to the longitude and latitude of duplicated events.
+
+- Noise range: ±0.005 degrees (approximately ±0.5 km)  
+- Applied only to events with identical spatial coordinates  
+- Repeated until all duplicated locations are removed  
+
+This perturbation is sufficiently small to preserve the physical structure of seismicity while improving numerical stability.
+
+---
+
+### Implementation
+
+The following code illustrates the preprocessing procedure:
+
+```python
+import numpy as np
+
+# Range of spatial noise (uniform distribution)
+noise_range = 0.005  # degrees (~ ±0.5 km)
+
+# Optional: time perturbation (in days, converted from seconds)
+noise_time_range = 0.5 / 86400  
+
+# Iterate until no duplicate (longitude, latitude) pairs remain
+while True:
+    # Identify duplicated spatial locations
+    duplicates = df_modified[
+        df_modified.duplicated(subset=['longitude', 'latitude'], keep=False)
+    ]
+    
+    # Stop if no duplicates remain
+    if duplicates.empty:
+        print("All duplicated locations have been resolved.")
+        break
+    
+    # Add uniform noise to duplicated entries
+    for idx in duplicates.index:
+        df_modified.loc[idx, 'longitude'] += np.random.uniform(-noise_range, noise_range)
+        df_modified.loc[idx, 'latitude'] += np.random.uniform(-noise_range, noise_range)
+    
+    print(f"{len(duplicates)} duplicated points remain. Applying perturbation...")
 
 ---
 
