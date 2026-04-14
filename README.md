@@ -1,26 +1,34 @@
-# Neural Kernel Point Process (ST-NKF)
+# ST-NKF: Spatio-Temporal Neural Kernel Point Process for Earthquake Forecasting
 
-## 📌 Overview
+ST-NKF is a unified framework for earthquake forecasting based on **Neural Point Processes (NPPs)**. It generalizes the classical Epidemic-Type Aftershock Sequence (ETAS) model by replacing parametric kernels with **neural kernel functions**, enabling flexible and data-driven modeling of seismicity.
 
-This repository implements a **Spatio-Temporal Neural Kernel Point Process (ST-NKF)** for earthquake modeling and forecasting.
+This repository provides:
 
-It generalizes the classical ETAS (Epidemic-Type Aftershock Sequence) model by replacing parametric kernels with **neural network-based kernels**, enabling more flexible and data-driven modeling of seismicity.
-
----
-
-## ✨ Key Features
-
-- 🔹 Unified framework for **ETAS and Neural Point Processes**
-- 🔹 Modular kernel design:
-  - Temporal kernel (Omori / Neural)
-  - Spatial kernel (ETAS / Neural)
-  - Productivity function (Exponential / Neural)
-- 🔹 CDF-based neural kernels (stable & interpretable)
-- 🔹 EM-like update of background rate (μ)
-- 🔹 Likelihood-based training
+- A modular implementation of **spatio-temporal point process models**
+- Support for both **empirical (ETAS-style)** and **neural kernels**
+- A flexible framework for analyzing **earthquake triggering mechanisms**
+- Tools for **likelihood-based evaluation and benchmarking**
 
 ---
 
-## 🧠 Model Formulation
+![ST-NKF](img/model.png)
 
-The conditional intensity function is:
+---
+
+## Setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your_username/ST-NKF.git
+
+2. Navigate to the project directory:
+
+```bash
+cd ST-NKF
+
+3. Install dependencies:
+
+```bash
+pip install tensorflow numpy pandas
+
