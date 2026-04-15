@@ -9,12 +9,12 @@ ST-NKF model is a spatiotemporal Neural Point Processes for earthquake forecasti
 
 ---
 
-"""
 ## Setup
 
 ### 1. Clone the Repository
 
 git clone https://github.com/zhancx-edu/NeuralKernelFunction.git
+
 cd NeuralKernelFunction
 
 ---
@@ -24,6 +24,7 @@ cd NeuralKernelFunction
 We provide a conda environment configuration file (environment.yml) for reproducibility.
 
 conda env create -f environment.yml
+
 conda activate neuralkernelfunction
 
 ---
