@@ -138,8 +138,6 @@ temporal_id = "neural"
 spatial_id = "empirical"
 kappa_id = "neural"
 
-This flexible design allows controlled comparisons between classical ETAS and neural kernel models.
-
 ---
 
 ### Step 3: Run the Notebook
@@ -196,31 +194,41 @@ We adopt multiple datasets from EarthquakeNPP to evaluate the proposed ST-NKF mo
 
 ---
 
-### Data Usage in This Work
+### 📂 Data Usage in This Work
 
-The earthquake catalogs provided by EarthquakeNPP have already undergone standardized preprocessing procedures. These include:
+The earthquake catalogs provided by **EarthquakeNPP** have undergone standardized preprocessing procedures, including:
 
-- Projection of geographic coordinates into a planar coordinate system  
-- Estimation of the magnitude of completeness for each catalog  
+- Selection of earthquakes within specified spatial regions and time periods, followed by temporal splitting into **auxiliary**, **training**, **validation**, and **test** sets  
+- Estimation of the **magnitude of completeness** for each catalog  
 - Filtering of events to retain only earthquakes above the completeness threshold  
 
-These preprocessing steps ensure data consistency and reliability across different datasets.
+---
+
+### 📊 Dataset Splits
+
+The temporal splits of each earthquake catalog are summarized below:
+
+| Catalog      | Auxiliary Start | Training Start | Validation Start | Testing Start | Testing End |
+|-------------|----------------|----------------|------------------|---------------|-------------|
+| ComCat      | 1971-01-01     | 1981-01-01     | 1998-01-01       | 2007-01-01    | 2020-01-17  |
+| SCEDC_2.0   | 1981-01-01     | 1985-01-01     | 2005-01-01       | 2014-01-01    | 2020-01-01  |
+| SCEDC_2.5   | 1981-01-01     | 1985-01-01     | 2005-01-01       | 2014-01-01    | 2020-01-01  |
+| SCEDC_3.0   | 1981-01-01     | 1985-01-01     | 2005-01-01       | 2014-01-01    | 2020-01-01  |
+| SanJac      | 2008-01-01     | 2009-01-01     | 2014-01-01       | 2016-01-01    | 2018-01-01  |
+| SaltonSea   | 2008-01-01     | 2009-01-01     | 2014-01-01       | 2016-01-01    | 2018-01-01  |
+| WHITE       | 2008-01-01     | 2009-01-01     | 2014-01-01       | 2017-01-01    | 2021-01-01  |
+
+For detailed preprocessing procedures, please refer to the EarthquakeNPP GitHub repository: https://github.com/ss15859/EarthquakeNPP
 
 ---
 
 ### Additional Processing: Spatial Perturbation
 
-In this work, we further introduce a small spatial perturbation to events that share identical locations in the catalog.
-
-In real earthquake catalogs, multiple events may be recorded with exactly the same coordinates due to limited spatial resolution or rounding during preprocessing. However, such duplicated locations can lead to numerical instability in spatial kernel estimation, especially for neural models.
-
-To address this issue, we add a small uniform random perturbation to the longitude and latitude of duplicated events.
+In this work, we further introduce a small spatial perturbation to events that share identical locations in the catalog. In real earthquake catalogs, multiple events may be recorded with exactly the same coordinates due to limited spatial resolution or rounding during preprocessing. However, such duplicated locations can lead to numerical instability in spatial kernel estimation, especially for neural models. To address this issue, we add a small uniform random perturbation to the longitude and latitude of duplicated events.
 
 - Noise range: ±0.005 degrees (approximately ±0.5 km)  
 - Applied only to events with identical spatial coordinates  
 - Repeated until all duplicated locations are removed  
-
-This perturbation is sufficiently small to preserve the physical structure of seismicity while improving numerical stability.
 
 ---
 
@@ -268,21 +276,16 @@ The conditional intensity function is defined as:
 
 Where:
 
-- **$\mu(x, y)$**: background seismicity rate over space  
-- **$\kappa_\psi(m)$**: magnitude-dependent productivity function  
-- **$h_\theta(t)$**: temporal kernel describing the decay of aftershock activity over time  
-- **$w_\phi(x, y)$**: spatial kernel characterizing the spatial distribution of triggered events  
+- **$\mu(x, y)$**: background rate  
+- **$\kappa(m)$**: productivity function  
+- **$h(t)$**: temporal probability density function  
+- **$w(x, y)$**: spatial probability density function  
 - **$\mathcal{H}_t$**: historical event set up to time $t$  
 
----
 
-This formulation generalizes the ETAS model by allowing each component  
-(i.e., productivity, temporal kernel, and spatial kernel) to be flexibly parameterized  
-either by empirical functions or neural networks.
 
----
+These functions can be set as empirical functions or neural functions.
 
-### Model Components
 
 | Component        | Empirical       | Neural           |
 |------------------|----------------|------------------|
@@ -290,19 +293,7 @@ either by empirical functions or neural networks.
 | Spatial kernel   | ETAS spatial   | Neural network   |
 | Productivity     | Exponential    | Neural network   |
 
----
 
-### Neural Kernel Design
-
-Neural kernels are implemented via:
-
-
-
-This design provides:
-
-- Flexible function approximation  
-- Stable training behavior  
-- Compatibility with likelihood-based learning  
 
 ---
 
@@ -317,10 +308,7 @@ Before initializing the model, we briefly describe the key input parameters of t
 ### 🔑 Input Parameters
 
 - **`time_step_train`, `time_step_val`, `time_step_test`**  
-  These parameters define the number of historical events used as input during training, validation, and testing, respectively.  
-
-  In our implementation, both the **ST-NKF** model and the **limited-history ETAS** model take as input a fixed number of the most recent events.  
-  The input length is determined by the auxiliary window size of each earthquake catalog:
+  These parameters define the number of historical events used as input during training, validation, and testing, respectively. In our implementation, both the **ST-NKF** model and the **limited-history ETAS** model take as input a fixed number of the most recent events. The input length is determined by the auxiliary window size of each earthquake catalog:
 
   ```
   ComCat: 14933  
