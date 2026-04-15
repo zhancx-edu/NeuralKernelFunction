@@ -263,20 +263,20 @@ while True:
 The conditional intensity function is defined as:
 
 ```math
-\lambda(t, x, y \mid \mathcal{H}_t) = \mu(x, y) + \sum_{(t_i, x_i, y_i, m_i) \in \mathcal{H}_t} \kappa_\psi(m_i) \cdot h_\theta(t - t_i) \cdot w_\phi(x - x_i, y - y_i)
+\lambda(t, x, y \mid \mathcal{H}_t) = \mu(x, y) + \sum_{(t_i, x_i, y_i, m_i) \in \mathcal{H}_t} \kappa(m_i) \cdot h(t - t_i) \cdot w(x - x_i, y - y_i)
 ```
 
 Where:
 
-- **\(\mu(x, y)\)**: background seismicity rate over space  
-- **\(\kappa_\psi(m)\)**: magnitude-dependent productivity function  
-- **\(h_\theta(t)\)**: temporal kernel describing the decay of aftershock activity over time  
-- **\(w_\phi(x, y)\)**: spatial kernel characterizing the spatial distribution of triggered events  
-- **\(\mathcal{H}_t\)**: historical event set up to time \(t\)  
+- **$\mu(x, y)$**: background seismicity rate over space  
+- **$\kappa_\psi(m)$**: magnitude-dependent productivity function  
+- **$h_\theta(t)$**: temporal kernel describing the decay of aftershock activity over time  
+- **$w_\phi(x, y)$**: spatial kernel characterizing the spatial distribution of triggered events  
+- **$\mathcal{H}_t$**: historical event set up to time $t$  
 
 ---
 
-This formulation generalizes the classical ETAS model by allowing each component  
+This formulation generalizes the ETAS model by allowing each component  
 (i.e., productivity, temporal kernel, and spatial kernel) to be flexibly parameterized  
 either by empirical functions or neural networks.
 
