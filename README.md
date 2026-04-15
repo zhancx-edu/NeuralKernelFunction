@@ -9,6 +9,35 @@ ST-NKF model is a spatiotemporal Neural Point Processes for earthquake forecasti
 
 ---
 
+## 📐 Model
+
+The conditional intensity function is defined as:
+
+```math
+\lambda(t, x, y \mid \mathcal{H}_t) = \mu(x, y) + \sum_{(t_i, x_i, y_i, m_i) \in \mathcal{H}_t} \kappa(m_i) \cdot h(t - t_i) \cdot w(x - x_i, y - y_i)
+```
+
+Where:
+
+- **$\mu(x, y)$**: background rate  
+- **$\kappa(m)$**: productivity function  
+- **$h(t)$**: temporal probability density function  
+- **$w(x, y)$**: spatial probability density function  
+- **$\mathcal{H}_t$**: historical event set up to time $t$  
+
+
+
+These functions can be set as empirical functions or neural functions.
+
+
+| Component        | Empirical       | Neural           |
+|------------------|----------------|------------------|
+| Temporal kernel  | Omori law      | Neural network   |
+| Spatial kernel   | ETAS spatial   | Neural network   |
+| Productivity     | Exponential    | Neural network   |
+
+---
+
 ## ⚙️ Setup
 
 ### 1. Clone the Repository
@@ -114,46 +143,6 @@ The pipeline will automatically:
 - Build the point process model  
 - Train via log-likelihood optimization  
 - Evaluate performance on validation and test sets  
-### Example Configurations
-
-#### ETAS Model (Fully Empirical)
-
-temporal_id = "empirical"
-spatial_id = "empirical"
-kappa_id = "empirical"
-
----
-
-#### ST-NKF Model (Fully Neural)
-
-temporal_id = "neural"
-spatial_id = "neural"
-kappa_id = "neural"
-
----
-
-#### Hybrid Models (Mixed Configuration)
-
-temporal_id = "neural"
-spatial_id = "empirical"
-kappa_id = "neural"
-
----
-
-### Step 3: Run the Notebook
-
-After configuring the dataset and model, run all cells in:
-
-main.ipynb
-
-The pipeline will automatically:
-
-- Load and preprocess the dataset
-- Construct the point process model
-- Train using log-likelihood optimization
-- Evaluate performance on validation and test sets
-"""
-
 
 ## Datasets
 
@@ -224,7 +213,7 @@ For detailed preprocessing procedures, please refer to the EarthquakeNPP GitHub 
 
 ### Additional Processing: Spatial Perturbation
 
-In this work, we further introduce a small spatial perturbation to events that share identical locations in the catalog. In real earthquake catalogs, multiple events may be recorded with exactly the same coordinates due to limited spatial resolution or rounding during preprocessing. However, such duplicated locations can lead to numerical instability in spatial kernel estimation, especially for neural models. To address this issue, we add a small uniform random perturbation to the longitude and latitude of duplicated events.
+In this work, we further introduce a small spatial perturbation to events that share identical locations in the catalog. Such duplicated locations can lead to numerical instability in spatial kernel estimation for neural models. To address this issue, we add a small uniform random perturbation to the longitude and latitude of duplicated events.
 
 - Noise range: ±0.005 degrees (approximately ±0.5 km)  
 - Applied only to events with identical spatial coordinates  
@@ -264,34 +253,6 @@ while True:
     
     print(f"{len(duplicates)} duplicated points remain. Applying perturbation...")
 ```
----
-
-## 📐 Model
-
-The conditional intensity function is defined as:
-
-```math
-\lambda(t, x, y \mid \mathcal{H}_t) = \mu(x, y) + \sum_{(t_i, x_i, y_i, m_i) \in \mathcal{H}_t} \kappa(m_i) \cdot h(t - t_i) \cdot w(x - x_i, y - y_i)
-```
-
-Where:
-
-- **$\mu(x, y)$**: background rate  
-- **$\kappa(m)$**: productivity function  
-- **$h(t)$**: temporal probability density function  
-- **$w(x, y)$**: spatial probability density function  
-- **$\mathcal{H}_t$**: historical event set up to time $t$  
-
-
-
-These functions can be set as empirical functions or neural functions.
-
-
-| Component        | Empirical       | Neural           |
-|------------------|----------------|------------------|
-| Temporal kernel  | Omori law      | Neural network   |
-| Spatial kernel   | ETAS spatial   | Neural network   |
-| Productivity     | Exponential    | Neural network   |
 
 
 
