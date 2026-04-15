@@ -87,9 +87,6 @@ We briefly describe the key input parameters of the `KernelPointProcess` in `mai
   - Spatial kernel  
   - Productivity function  
 
-  Each can be set to:
-  - `"empirical"` — classical ETAS formulation  
-  - `"neural"` — neural network-based formulation  
 
 - **`global_m0`**  
   The magnitude threshold (cutoff magnitude) of the earthquake catalog.
