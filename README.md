@@ -1,4 +1,4 @@
-# ST-NKF: Spatio-Temporal Neural Kernel Point Process for Earthquake Forecasting
+# ST-NKF: Spatio-Temporal Neural Kernel Function for Earthquake Forecasting
 
 ST-NKF model is a spatiotemporal Neural Point Processes for earthquake forecasting. It generalizes the Epidemic-Type Aftershock Sequence (ETAS) model by replacing parametric kernels with neural kernel functions, enabling flexible and data-driven modeling of seismicity.
 
@@ -9,25 +9,101 @@ ST-NKF model is a spatiotemporal Neural Point Processes for earthquake forecasti
 
 ---
 
+"""
 ## Setup
 
-1. Clone the repository:
+### 1. Clone the Repository
 
-```bash
 git clone https://github.com/zhancx-edu/NeuralKernelFunction.git
-```
+cd NeuralKernelFunction
 
-2. Navigate to the project directory:
+---
 
-```bash
-cd ST-NKF
-```
+### 2. Install Environment
 
-3. Install dependencies:
+We provide a conda environment configuration file (environment.yml) for reproducibility.
 
-```bash
-pip install tensorflow numpy pandas
-```
+conda env create -f environment.yml
+conda activate neuralkernelfunction
+
+---
+
+### 3. Run Experiments
+
+All experiments are conducted using the notebook:
+
+main.ipynb
+
+---
+
+### Step 1: Select Dataset
+
+Choose a dataset from the EarthquakeNPP benchmark by setting:
+
+dataset_name = "ComCat"
+
+Available options:
+
+["ComCat", "SaltonSea", "SanJac", "WHITE", "SCEDC_20", "SCEDC_25", "SCEDC_30"]
+
+---
+
+### Step 2: Configure Model Components
+
+The model consists of three configurable components:
+
+- Temporal kernel (temporal_id)
+- Spatial kernel (spatial_id)
+- Productivity function (kappa_id)
+
+Each component can be set to:
+
+- "empirical": classical ETAS kernel
+- "neural": neural network-based kernel
+
+---
+
+### Example Configurations
+
+#### ETAS Model (Fully Empirical)
+
+temporal_id = "empirical"
+spatial_id = "empirical"
+kappa_id = "empirical"
+
+---
+
+#### ST-NKF Model (Fully Neural)
+
+temporal_id = "neural"
+spatial_id = "neural"
+kappa_id = "neural"
+
+---
+
+#### Hybrid Models (Mixed Configuration)
+
+temporal_id = "neural"
+spatial_id = "empirical"
+kappa_id = "neural"
+
+This flexible design allows controlled comparisons between classical ETAS and neural kernel models.
+
+---
+
+### Step 3: Run the Notebook
+
+After configuring the dataset and model, run all cells in:
+
+main.ipynb
+
+The pipeline will automatically:
+
+- Load and preprocess the dataset
+- Construct the point process model
+- Train using log-likelihood optimization
+- Evaluate performance on validation and test sets
+"""
 
 
 ## Datasets
