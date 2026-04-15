@@ -7,7 +7,6 @@ ST-NKF model is a spatiotemporal Neural Point Processes for earthquake forecasti
 
 ![ST-NKF](method.jpg)
 
----
 
 ## 📐 Model
 
@@ -67,6 +66,88 @@ main.ipynb
 ```
 
 ---
+
+
+
+
+
+
+## 🧩 Model Configuration
+
+Before initializing the model, we briefly describe the key input parameters of the `KernelPointProcess`.
+
+### 🔑 Input Parameters
+
+- **`time_step_train`, `time_step_val`, `time_step_test`**  
+  These parameters define the number of historical events used as input during training, validation, and testing, respectively. In our implementation, both the **ST-NKF** model and the **limited-history ETAS** model take as input a fixed number of the most recent events. The input length is determined by the auxiliary window size of each earthquake catalog:
+
+  ```
+  ComCat: 14933  
+  SaltonSea: 2144  
+  SanJac: 1672  
+  WHITE: 2196  
+  SCEDC_2.0: 12373  
+  SCEDC_2.5: 4242  
+  SCEDC_3.0: 1142  
+  ```
+
+- **`temporal_id`, `spatial_id`, `kappa_id`**  
+  These parameters specify the formulation of the three kernel components:
+  - Temporal kernel  
+  - Spatial kernel  
+  - Productivity function  
+
+  Each can be set to:
+  - `"empirical"` — classical ETAS formulation  
+  - `"neural"` — neural network-based formulation  
+
+- **`global_m0`**  
+  The magnitude threshold (cutoff magnitude) of the earthquake catalog.
+
+- **`area`**  
+  The spatial area of the study region.
+
+- **`size_layer`**  
+  The number of layers in the neural network.
+
+- **`size_nn`**  
+  The number of neurons in each hidden layer.
+
+---
+
+### 🏗️ Initialize Model
+
+```python
+model = KernelPointProcess(
+    time_step_train=input_dim_train,
+    time_step_val=input_dim_val,
+    time_step_test=input_dim_test,
+    temporal_id=temporal_id,
+    spatial_id=spatial_id,
+    kappa_id=kappa_id,
+    global_m0=config["global_m0"],
+    area=obj_area,
+    size_layer=5,
+    size_nn=32
+).set_train_data(
+    data_t_train, data_m_train, data_x_train, data_y_train
+).set_val_data(
+    data_t_val, data_m_val, data_x_val, data_y_val
+).set_test_data(
+    data_t_test, data_m_test, data_x_test, data_y_test
+).set_model().compile().fit_eval(
+    epochs=1000, batch_size=128
+).eval_train().eval_val().eval_test().save_weights(
+    f"weights/{datasets_id}_{temporal_id}_{spatial_id}_{kappa_id}"
+)
+```
+
+---
+
+
+
+
+
 
 ### 🧩 Step 1: Select Dataset
 
@@ -258,81 +339,7 @@ while True:
 
 ---
 
-## Usage
 
----
-
-## 🧩 Model Configuration
-
-Before initializing the model, we briefly describe the key input parameters of the `KernelPointProcess`.
-
-### 🔑 Input Parameters
-
-- **`time_step_train`, `time_step_val`, `time_step_test`**  
-  These parameters define the number of historical events used as input during training, validation, and testing, respectively. In our implementation, both the **ST-NKF** model and the **limited-history ETAS** model take as input a fixed number of the most recent events. The input length is determined by the auxiliary window size of each earthquake catalog:
-
-  ```
-  ComCat: 14933  
-  SaltonSea: 2144  
-  SanJac: 1672  
-  WHITE: 2196  
-  SCEDC_2.0: 12373  
-  SCEDC_2.5: 4242  
-  SCEDC_3.0: 1142  
-  ```
-
-- **`temporal_id`, `spatial_id`, `kappa_id`**  
-  These parameters specify the formulation of the three kernel components:
-  - Temporal kernel  
-  - Spatial kernel  
-  - Productivity function  
-
-  Each can be set to:
-  - `"empirical"` — classical ETAS formulation  
-  - `"neural"` — neural network-based formulation  
-
-- **`global_m0`**  
-  The magnitude threshold (cutoff magnitude) of the earthquake catalog.
-
-- **`area`**  
-  The spatial area of the study region.
-
-- **`size_layer`**  
-  The number of layers in the neural network.
-
-- **`size_nn`**  
-  The number of neurons in each hidden layer.
-
----
-
-### 🏗️ Initialize Model
-
-```python
-model = KernelPointProcess(
-    time_step_train=input_dim_train,
-    time_step_val=input_dim_val,
-    time_step_test=input_dim_test,
-    temporal_id=temporal_id,
-    spatial_id=spatial_id,
-    kappa_id=kappa_id,
-    global_m0=config["global_m0"],
-    area=obj_area,
-    size_layer=5,
-    size_nn=32
-).set_train_data(
-    data_t_train, data_m_train, data_x_train, data_y_train
-).set_val_data(
-    data_t_val, data_m_val, data_x_val, data_y_val
-).set_test_data(
-    data_t_test, data_m_test, data_x_test, data_y_test
-).set_model().compile().fit_eval(
-    epochs=1000, batch_size=128
-).eval_train().eval_val().eval_test().save_weights(
-    f"weights/{datasets_id}_{temporal_id}_{spatial_id}_{kappa_id}"
-)
-```
-
----
 
 ## ⏱️ Computational Environment
 
