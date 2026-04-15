@@ -7,8 +7,7 @@ ST-NKF model is a spatiotemporal Neural Point Processes for earthquake forecasti
 
 ![ST-NKF](method.jpg)
 
-
-## 📐 Model
+---
 
 The conditional intensity function is defined as:
 
@@ -52,7 +51,7 @@ We provide a Conda environment file for reproducibility:
 
 ```bash
 conda env create -f environment.yml
-conda activate neuralkernelfunction
+conda activate py311-tf
 ```
 
 ---
@@ -65,16 +64,7 @@ All experiments are implemented in:
 main.ipynb
 ```
 
----
-
-
-
-
-
-
-## 🧩 Model Configuration
-
-Before initializing the model, we briefly describe the key input parameters of the `KernelPointProcess`.
+We briefly describe the key input parameters of the `KernelPointProcess` in `main.ipynb`.
 
 ### 🔑 Input Parameters
 
@@ -144,10 +134,7 @@ model = KernelPointProcess(
 
 ---
 
-
-
-
-
+## 🚀 Running Steps
 
 ### 🧩 Step 1: Select Dataset
 
@@ -205,8 +192,6 @@ temporal_id = "neural"
 spatial_id = "empirical"
 kappa_id   = "neural"
 ```
-
-This flexible design enables controlled comparisons between classical ETAS and neural kernel models.
 
 ---
 
