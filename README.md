@@ -152,7 +152,7 @@ Available datasets:
 
 ---
 
-### 🧠 Step 2: Configure Model Components
+### 🧠 Step 2: Select Components
 
 The model consists of three components:
 
@@ -203,21 +203,11 @@ Run all cells in:
 main.ipynb
 ```
 
-The pipeline will automatically:
-
-- Load and preprocess datasets  
-- Build the point process model  
-- Train via log-likelihood optimization  
-- Evaluate performance on validation and test sets  
+---
 
 ## Datasets
 
 This study is conducted based on the benchmark datasets provided by the [EarthquakeNPP](https://github.com/ss15859/EarthquakeNPP), which is designed for evaluating Neural Point Process (NPP) models on earthquake forecasting tasks.
-
-
----
-
-### Datasets Used in This Study
 
 We adopt multiple datasets from EarthquakeNPP to evaluate the proposed ST-NKF model:
 
