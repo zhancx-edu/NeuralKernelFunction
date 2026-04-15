@@ -65,8 +65,8 @@ The model consists of three components:
 
 Each component supports:
 
-- `"empirical"` — classical ETAS formulation  
-- `"neural"` — neural network-based formulation  
+- `"empirical"` — empirical kernel in ETAS model  
+- `"neural"` — neural kernel  
 
 ---
 
@@ -88,7 +88,7 @@ spatial_id = "neural"
 kappa_id   = "neural"
 ```
 
-#### Hybrid Model
+#### Hybrid Model (Example)
 
 ```python
 temporal_id = "neural"
@@ -160,10 +160,6 @@ The pipeline will automatically:
 ## Datasets
 
 This study is conducted based on the benchmark datasets provided by the [EarthquakeNPP](https://github.com/ss15859/EarthquakeNPP), which is designed for evaluating Neural Point Process (NPP) models on earthquake forecasting tasks.
-
-### EarthquakeNPP Benchmark
-
-EarthquakeNPP is a comprehensive and standardized benchmark for earthquake forecasting, developed to facilitate fair and reproducible comparisons between ETAS and NPPs.
 
 
 ---
@@ -320,3 +316,44 @@ model = KernelPointProcess(
     size_layer=3,
     size_nn=32
 )
+
+
+
+---
+
+## ⏱️ Computational Environment
+
+All experiments were conducted on a workstation equipped with:
+
+- NVIDIA GeForce RTX 3090 GPU  
+- AMD EPYC 7302P 16-Core processor (32 threads)  
+
+---
+
+## 📊 Dataset Statistics & Runtime
+
+The table below summarizes the number of earthquakes in each dataset split, along with the computational time (in minutes) for both ST-NKF and ETAS models.
+
+```latex
+\begin{table}[htbp]
+\centering
+\caption{Summary of earthquake counts and computational time for each dataset.}
+\label{tab:runtime}
+\begin{tabular}{lcccccc}
+\hline
+& \multicolumn{4}{c}{Number of earthquakes} & \multicolumn{2}{c}{Runtime (minutes)} \\
+\cline{2-5} \cline{6-7}
+Dataset & Auxiliary & Training & Validation & Test & ST-NKF & ETAS \\
+\hline
+ComCat    & 14933 & 40701 & 14741 & 21888 & 86.40  & 12.14 \\
+SaltonSea & 2144  & 36639 & 2683  & 4104  & 14.82  & 2.14  \\
+SanJac    & 1672  & 11770 & 3449  & 4400  & 3.30   & 0.86  \\
+WHITE     & 2196  & 18548 & 13812 & 24080 & 10.76  & 2.71  \\
+SCEDC\_20 & 12373 & 81433 & 23484 & 13071 & 141.69 & 18.53 \\
+SCEDC\_25 & 4242  & 25257 & 9089  & 5000  & 24.38  & 4.70  \\
+SCEDC\_30 & 1142  & 6815  & 3135  & 1898  & 2.05   & 1.33  \\
+\hline
+\end{tabular}
+\label{tab:dataset_runtime}
+\end{table}
+```
