@@ -317,7 +317,7 @@ model = KernelPointProcess(
     size_nn=32
 )
 
-
+```
 
 ---
 
