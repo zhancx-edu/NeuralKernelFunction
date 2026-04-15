@@ -330,16 +330,11 @@ All experiments were conducted on a workstation equipped with:
 
 ---
 
-## 📊 Dataset Statistics & Runtime
+## 📊 Runtime
 
-The table below summarizes the number of earthquakes in each dataset split, along with the computational time (in minutes) for both ST-NKF and ETAS models.
+The table below summarizes the computational time (in minutes) for both ST-NKF and ETAS models.
 
-| Dataset    | Auxiliary | Training | Validation | Test  | ST-NKF (min) | ETAS (min) |
-|------------|----------:|---------:|-----------:|------:|-------------:|-----------:|
-| ComCat     | 14933     | 40701    | 14741      | 21888 | 86.40        | 12.14      |
-| SaltonSea  | 2144      | 36639    | 2683       | 4104  | 14.82        | 2.14       |
-| SanJac     | 1672      | 11770    | 3449       | 4400  | 3.30         | 0.86       |
-| WHITE      | 2196      | 18548    | 13812      | 24080 | 10.76        | 2.71       |
-| SCEDC_20   | 12373     | 81433    | 23484      | 13071 | 141.69       | 18.53      |
-| SCEDC_25   | 4242      | 25257    | 9089       | 5000  | 24.38        | 4.70       |
-| SCEDC_30   | 1142      | 6815     | 3135       | 1898  | 2.05         | 1.33       |
+|    Model     | ComCat | SaltonSea | SanJac | WHITE | SCEDC_20 | SCEDC_25 | SCEDC_30 |
+|--------------|--------:|----------:|-------:|------:|---------:|---------:|---------:|
+|    ST-NKF    | 86.40   | 14.82     | 3.30   | 10.76 | 141.69   | 24.38    | 2.05     |
+|    ETAS      | 12.14   | 2.14      | 0.86   | 2.71  | 18.53    | 4.70     | 1.33     |
