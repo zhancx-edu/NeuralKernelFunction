@@ -32,7 +32,8 @@ class KernelPointProcess:
         global_m0: float,
         area: float,
         size_layer: int,
-        size_nn: int
+        size_nn: int,
+        seed: int = None
     ):
         self.time_step_train = time_step_train
         self.time_step_val = time_step_val
@@ -48,9 +49,9 @@ class KernelPointProcess:
         self.produc_func = ProductionFunction(global_m0)
         self.omori_func = OmoriFunction()
         self.spatial_func = SpatialFunction(global_m0)
-        self.temporal_net = TemporalKernelNetwork(size_nn, size_layer)
-        self.spatial_net = SpatialKernelNetwork(size_nn, size_layer)
-        self.kappa_net = KappaNetwork(size_nn, size_layer)
+        self.temporal_net = TemporalKernelNetwork(size_nn, size_layer, seed=seed)
+        self.spatial_net = SpatialKernelNetwork(size_nn, size_layer, seed=seed)
+        self.kappa_net = KappaNetwork(size_nn, size_layer, seed=seed)
 
     def set_train_data(self, times: np.ndarray, mags: np.ndarray, locs_x: np.ndarray, locs_y: np.ndarray) -> 'SeismicPointProcess':
         """Set training data."""
@@ -101,10 +102,11 @@ class KernelPointProcess:
         if self.spatial_id == "neural":
             cdf_spatial = self.spatial_net(dis_in_nmlz)
             d_v_r = K.gradients(cdf_spatial, dis_in)[0]
-            pdf_spatial = layers.Multiply()([d_v_r, 1.0 / (2 * np.pi * dis_in)])
+            epsilon = 1e-5
+            pdf_spatial = layers.Multiply()([d_v_r, 1.0 / (2 * np.pi * (dis_in + epsilon))])
         elif self.spatial_id == "empirical":
             dis_in_square = layers.Lambda(lambda x: x ** 2)(dis_in)
-            pdf_spatial = self.spatial_func(dis_in_square, mags_in_1)
+            pdf_spatial, cdf_spatial = self.spatial_func(dis_in_square, mags_in_1)
         else:
             raise ValueError(f"Invalid spatial_id: {self.spatial_id}")
 
@@ -144,7 +146,7 @@ class KernelPointProcess:
 
         self.model = Model(
             inputs=[time_in_1, time_in_2, mags_in_1, dis_in],
-            outputs=[l_ts, l_t, Int_l, pdf_temporal_1, cdf_temporal_1, pdf_spatial, kappa_1]
+            outputs=[l_ts, l_t, Int_l, pdf_temporal_1, cdf_temporal_1, pdf_spatial, cdf_spatial, kappa_1]
         )
         self.model.add_loss(-K.mean(K.log(l_ts) - Int_l))
 
@@ -205,7 +207,7 @@ class KernelPointProcess:
             batch_size=batch_size
         )
         self.lam_ts_train, self.lam_t_train, self.Int_lam_train, self.pdf_temporal_train, \
-        self.cdf_temporal_train, self.pdf_spatial_train, self.kappa_train = outputs
+        self.cdf_temporal_train, self.pdf_spatial_train, self.cdf_spatial_train, self.kappa_train = outputs
         self.LL_ts_train = np.log(self.lam_ts_train) - self.Int_lam_train
         self.LL_t_train = np.log(self.lam_t_train) - self.Int_lam_train
         self.LL_s_train = self.LL_ts_train - self.LL_t_train
@@ -221,7 +223,7 @@ class KernelPointProcess:
             batch_size=batch_size
         )
         self.lam_ts_val, self.lam_t_val, self.Int_lam_val, self.pdf_temporal_val, \
-        self.cdf_temporal_val, self.pdf_spatial_val, self.kappa_val = outputs
+        self.cdf_temporal_val, self.pdf_spatial_val, self.cdf_spatial_val, self.kappa_val = outputs
         self.LL_ts_val = np.log(self.lam_ts_val) - self.Int_lam_val
         self.LL_t_val = np.log(self.lam_t_val) - self.Int_lam_val
         self.LL_s_val = self.LL_ts_val - self.LL_t_val
@@ -237,7 +239,7 @@ class KernelPointProcess:
             batch_size=batch_size
         )
         self.lam_ts_test, self.lam_t_test, self.Int_lam_test, self.pdf_temporal_test, \
-        self.cdf_temporal_test, self.pdf_spatial_test, self.kappa_test = outputs
+        self.cdf_temporal_test, self.pdf_spatial_test, self.cdf_spatial_test, self.kappa_test = outputs
         self.LL_ts_test = np.log(self.lam_ts_test) - self.Int_lam_test
         self.LL_t_test = np.log(self.lam_t_test) - self.Int_lam_test
         self.LL_s_test = self.LL_ts_test - self.LL_t_test

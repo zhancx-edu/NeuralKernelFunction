@@ -87,42 +87,73 @@ class SpatialFunction(layers.Layer):
         self.spatial_m0 = tf.constant(input_m0, name='spatial_m0')
 
     def call(self, dist_2, hist_m):
-        return (self.spatial_q - 1) / (np.pi * self.spatial_D2 * tf.exp(self.spatial_gamma * (hist_m - self.spatial_m0))) * \
-               (1 + dist_2 / (self.spatial_D2 * tf.exp(self.spatial_gamma * (hist_m - self.spatial_m0)))) ** (-self.spatial_q)
+        # return (self.spatial_q - 1) / (np.pi * self.spatial_D2 * tf.exp(self.spatial_gamma * (hist_m - self.spatial_m0))) * \
+        #        (1 + dist_2 / (self.spatial_D2 * tf.exp(self.spatial_gamma * (hist_m - self.spatial_m0)))) ** (-self.spatial_q)
+
+        A = self.spatial_D2 * tf.exp(
+            self.spatial_gamma * (hist_m - self.spatial_m0)
+        )
+        
+        pdf = (self.spatial_q - 1) / (np.pi * A) * (
+            1 + dist_2 / A
+        ) ** (-self.spatial_q)
+        
+        cdf = 1.0 - (
+            1 + dist_2 / A
+        ) ** (1.0 - self.spatial_q)
+        
+        return pdf, cdf
+        
 
 class TemporalKernelNetwork(layers.Layer):
     """Neural network layer for modeling the temporal kernel."""
-    def __init__(self, size_nn: int, size_layer: int):
+
+    def __init__(self, size_nn: int, size_layer: int, seed: int = None):
         super().__init__()
+
         self.size_nn = size_nn
         self.size_layer = size_layer
+        self.seed = seed
         self.layers = []
 
-        def abs_glorot_uniform(shape, dtype=None, partition_info=None):
-            return K.abs(keras.initializers.glorot_uniform(seed=None)(shape, dtype=dtype))
+        initializer = keras.initializers.GlorotUniform(seed=self.seed)
+
+        def abs_glorot_uniform(shape, dtype=None):
+            return K.abs(initializer(shape, dtype=dtype))
 
         # First hidden layer
         self.layers.append(
             layers.Dense(
-                self.size_nn, activation='tanh', use_bias=False,
-                kernel_initializer=abs_glorot_uniform, kernel_constraint=constraints.NonNeg(),
+                self.size_nn,
+                activation='tanh',
+                use_bias=False,
+                kernel_initializer=abs_glorot_uniform,
+                kernel_constraint=constraints.NonNeg(),
                 name='temporal_dense_0'
             )
         )
+
         # Additional hidden layers
         for i in range(self.size_layer - 1):
             self.layers.append(
                 layers.Dense(
-                    self.size_nn, activation='tanh', use_bias=False,
-                    kernel_initializer=abs_glorot_uniform, kernel_constraint=constraints.NonNeg(),
+                    self.size_nn,
+                    activation='tanh',
+                    use_bias=False,
+                    kernel_initializer=abs_glorot_uniform,
+                    kernel_constraint=constraints.NonNeg(),
                     name=f'temporal_dense_{i+1}'
                 )
             )
+
         # Output layer
         self.layers.append(
             layers.Dense(
-                1, activation='tanh', use_bias=False,
-                kernel_initializer=abs_glorot_uniform, kernel_constraint=constraints.NonNeg(),
+                1,
+                activation='tanh',
+                use_bias=False,
+                kernel_initializer=abs_glorot_uniform,
+                kernel_constraint=constraints.NonNeg(),
                 name='temporal_output'
             )
         )
@@ -133,39 +164,57 @@ class TemporalKernelNetwork(layers.Layer):
             x = layer(x)
         return x
 
+
+
 class SpatialKernelNetwork(layers.Layer):
     """Neural network layer for modeling the spatial kernel."""
-    def __init__(self, size_nn: int, size_layer: int):
+
+    def __init__(self, size_nn: int, size_layer: int, seed: int = None):
         super().__init__()
+
         self.size_nn = size_nn
         self.size_layer = size_layer
+        self.seed = seed
         self.layers = []
 
-        def abs_glorot_uniform(shape, dtype=None, partition_info=None):
-            return K.abs(keras.initializers.glorot_uniform(seed=None)(shape, dtype=dtype))
+        initializer = keras.initializers.GlorotUniform(seed=self.seed)
+
+        def abs_glorot_uniform(shape, dtype=None):
+            return K.abs(initializer(shape, dtype=dtype))
 
         # First hidden layer
         self.layers.append(
             layers.Dense(
-                self.size_nn, activation='tanh', use_bias=False,
-                kernel_initializer=abs_glorot_uniform, kernel_constraint=constraints.NonNeg(),
+                self.size_nn,
+                activation='tanh',
+                use_bias=False,
+                kernel_initializer=abs_glorot_uniform,
+                kernel_constraint=constraints.NonNeg(),
                 name='spatial_dense_0'
             )
         )
+
         # Additional hidden layers
         for i in range(self.size_layer - 1):
             self.layers.append(
                 layers.Dense(
-                    self.size_nn, activation='tanh', use_bias=False,
-                    kernel_initializer=abs_glorot_uniform, kernel_constraint=constraints.NonNeg(),
+                    self.size_nn,
+                    activation='tanh',
+                    use_bias=False,
+                    kernel_initializer=abs_glorot_uniform,
+                    kernel_constraint=constraints.NonNeg(),
                     name=f'spatial_dense_{i+1}'
                 )
             )
+
         # Output layer
         self.layers.append(
             layers.Dense(
-                1, activation='tanh', use_bias=False,
-                kernel_initializer=abs_glorot_uniform, kernel_constraint=constraints.NonNeg(),
+                1,
+                activation='tanh',
+                use_bias=False,
+                kernel_initializer=abs_glorot_uniform,
+                kernel_constraint=constraints.NonNeg(),
                 name='spatial_output'
             )
         )
@@ -176,39 +225,54 @@ class SpatialKernelNetwork(layers.Layer):
             x = layer(x)
         return x
 
+
+
 class KappaNetwork(layers.Layer):
     """Neural network layer for modeling the kappa function."""
-    def __init__(self, size_nn: int, size_layer: int):
+
+    def __init__(self, size_nn: int, size_layer: int, seed: int = None):
         super().__init__()
+
         self.size_nn = size_nn
         self.size_layer = size_layer
+        self.seed = seed
         self.layers = []
 
-        def abs_glorot_uniform(shape, dtype=None, partition_info=None):
-            return K.abs(keras.initializers.glorot_uniform(seed=None)(shape, dtype=dtype))
+        initializer = keras.initializers.GlorotUniform(seed=self.seed)
+
+        def abs_glorot_uniform(shape, dtype=None):
+            return K.abs(initializer(shape, dtype=dtype))
 
         # First hidden layer
         self.layers.append(
             layers.Dense(
-                self.size_nn, activation='tanh',
-                kernel_initializer=abs_glorot_uniform, kernel_constraint=constraints.NonNeg(),
+                self.size_nn,
+                activation='tanh',
+                kernel_initializer=abs_glorot_uniform,
+                kernel_constraint=constraints.NonNeg(),
                 name='kappa_dense_0'
             )
         )
+
         # Additional hidden layers
         for i in range(self.size_layer - 1):
             self.layers.append(
                 layers.Dense(
-                    self.size_nn, activation='tanh',
-                    kernel_initializer=abs_glorot_uniform, kernel_constraint=constraints.NonNeg(),
+                    self.size_nn,
+                    activation='tanh',
+                    kernel_initializer=abs_glorot_uniform,
+                    kernel_constraint=constraints.NonNeg(),
                     name=f'kappa_dense_{i+1}'
                 )
             )
+
         # Output layer
         self.layers.append(
             layers.Dense(
-                1, activation='softplus',
-                kernel_initializer=abs_glorot_uniform, kernel_constraint=constraints.NonNeg(),
+                1,
+                activation='softplus',
+                kernel_initializer=abs_glorot_uniform,
+                kernel_constraint=constraints.NonNeg(),
                 name='kappa_output'
             )
         )
@@ -218,6 +282,8 @@ class KappaNetwork(layers.Layer):
         for layer in self.layers:
             x = layer(x)
         return x
+
+
 
 class UpdateMuCallback(Callback):
     """Callback to update the mu parameter after each epoch."""
