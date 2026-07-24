@@ -66,6 +66,46 @@ main.ipynb
 
 We briefly describe the key input parameters of the `KernelPointProcess` in `main.ipynb`.
 
+Alternatively, all experiments can be executed from the command line using the provided Python scripts.
+
+### Run a Single Experiment
+
+```bash
+python run_models.py 1 1 "SanJac" "empirical" "empirical" "empirical"
+```
+
+The command-line arguments are:
+
+| Argument | Description |
+|----------|-------------|
+| **1st** | **Random seed.** Controls both the random initialization of the NKF model and the random sampling of training events. For the ETAS model, the seed only affects the sampling of training events. |
+| **2nd** | **GPU ID** used for training (e.g., `0`, `1`). |
+| **3rd** | **Dataset name.** Available options are: `"SCEDC_20"`, `"SCEDC_25"`, `"SCEDC_30"`, `"ComCat"`, `"SaltonSea"`, `"SanJac"`, and `"WHITE"`. |
+| **4th** | **Productivity function.** Either `"empirical"` or `"neural"`. |
+| **5th** | **Temporal decay function.** Either `"empirical"` or `"neural"`. |
+| **6th** | **Spatial decay function.** Either `"empirical"` or `"neural"`. |
+
+### Model Configurations
+
+The last three arguments determine which model is used:
+
+| Configuration | Model |
+|--------------|-------|
+| `"empirical" "empirical" "empirical"` | ETAS |
+| `"neural" "neural" "neural"` | NKF |
+
+Mixed configurations are also supported, allowing empirical and neural components to be combined for ablation studies.
+
+### Run All Experiments
+
+To reproduce all benchmark results (three independent runs of both ETAS and NKF on all earthquake catalogs), simply execute:
+
+```bash
+python batch.py
+```
+
+This script automatically runs all datasets with three independent random seeds and reproduces the experimental results reported in the paper.
+
 ### 🔑 Input Parameters
 
 - **`time_step_train`, `time_step_val`, `time_step_test`**  
@@ -268,46 +308,9 @@ For detailed preprocessing procedures, please refer to the EarthquakeNPP GitHub 
 
 In this work, we further introduce a small spatial perturbation to events that share identical locations in the catalog. Such duplicated locations can lead to numerical instability in spatial kernel estimation for neural models. To address this issue, we add a small uniform random perturbation to the longitude and latitude of duplicated events.
 
-- Noise range: ±0.005 degrees (approximately ±0.5 km)  
+- Noise range: ±0.5 km 
 - Applied only to events with identical spatial coordinates  
 - Repeated until all duplicated locations are removed  
-
----
-
-### Implementation
-
-The following code illustrates the preprocessing procedure:
-
-```python
-import numpy as np
-
-# Range of spatial noise (uniform distribution)
-noise_range = 0.005  # degrees (~ ±0.5 km)
-
-# Optional: time perturbation (in days, converted from seconds)
-noise_time_range = 0.5 / 86400  
-
-# Iterate until no duplicate (longitude, latitude) pairs remain
-while True:
-    # Identify duplicated spatial locations
-    duplicates = df_modified[
-        df_modified.duplicated(subset=['longitude', 'latitude'], keep=False)
-    ]
-    
-    # Stop if no duplicates remain
-    if duplicates.empty:
-        print("All duplicated locations have been resolved.")
-        break
-    
-    # Add uniform noise to duplicated entries
-    for idx in duplicates.index:
-        df_modified.loc[idx, 'longitude'] += np.random.uniform(-noise_range, noise_range)
-        df_modified.loc[idx, 'latitude'] += np.random.uniform(-noise_range, noise_range)
-    
-    print(f"{len(duplicates)} duplicated points remain. Applying perturbation...")
-```
-
-
 
 ---
 
