@@ -56,19 +56,9 @@ conda activate py311-tf
 
 ---
 
-## 🚀 Running Experiments
-
-All experiments are implemented in:
-
-```bash
-main.ipynb
-```
-
-We briefly describe the key input parameters of the `KernelPointProcess` in `main.ipynb`.
-
-Alternatively, all experiments can be executed from the command line using the provided Python scripts.
-
 ### Run a Single Experiment
+
+All experiments can be executed from the command line using the provided Python scripts.
 
 ```bash
 python run_models.py 1 1 "SanJac" "empirical" "empirical" "empirical"
@@ -82,8 +72,8 @@ The command-line arguments are:
 | **2nd** | **GPU ID** used for training (e.g., `0`, `1`). |
 | **3rd** | **Dataset name.** Available options are: `"SCEDC_20"`, `"SCEDC_25"`, `"SCEDC_30"`, `"ComCat"`, `"SaltonSea"`, `"SanJac"`, and `"WHITE"`. |
 | **4th** | **Productivity function.** Either `"empirical"` or `"neural"`. |
-| **5th** | **Temporal decay function.** Either `"empirical"` or `"neural"`. |
-| **6th** | **Spatial decay function.** Either `"empirical"` or `"neural"`. |
+| **5th** | **Temporal function.** Either `"empirical"` or `"neural"`. |
+| **6th** | **Spatial function.** Either `"empirical"` or `"neural"`. |
 
 ### Model Configurations
 
@@ -106,7 +96,21 @@ python batch.py
 
 This script automatically runs all datasets with three independent random seeds and reproduces the experimental results reported in the paper.
 
+
+
+---
+
+## 🚀 Running Experiments
+
+We also provide a Jupyter notebook for a quick start:
+
+```bash
+main.ipynb
+```
+
 ### 🔑 Input Parameters
+
+We briefly describe the key input parameters of the `KernelPointProcess` in `main.ipynb`.
 
 - **`time_step_train`, `time_step_val`, `time_step_test`**  
   These parameters define the number of historical events used as input during training, validation, and testing, respectively. In our implementation, both the **ST-NKF** model and the **limited-history ETAS** model take as input a fixed number of the most recent events. The input length is determined by the auxiliary window size of each earthquake catalog:
@@ -241,6 +245,8 @@ main.ipynb
 ```
 
 ---
+
+
 
 ## Datasets
 
