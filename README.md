@@ -56,7 +56,7 @@ conda activate py311-tf
 
 ---
 
-### Run a Single Experiment
+### 3. Run Experiments
 
 All experiments can be executed from the command line using the provided Python scripts.
 
@@ -75,18 +75,6 @@ The command-line arguments are:
 | **5th** | **Temporal function.** Either `"empirical"` or `"neural"`. |
 | **6th** | **Spatial function.** Either `"empirical"` or `"neural"`. |
 
-### Model Configurations
-
-The last three arguments determine which model is used:
-
-| Configuration | Model |
-|--------------|-------|
-| `"empirical" "empirical" "empirical"` | ETAS |
-| `"neural" "neural" "neural"` | NKF |
-
-Mixed configurations are also supported, allowing empirical and neural components to be combined for ablation studies.
-
-### Run All Experiments
 
 To reproduce all benchmark results (three independent runs of both ETAS and NKF on all earthquake catalogs), simply execute:
 
@@ -100,7 +88,6 @@ This script automatically runs all datasets with three independent random seeds 
 
 ---
 
-## 🚀 Running Experiments
 
 We also provide a Jupyter notebook for a quick start:
 
@@ -108,45 +95,10 @@ We also provide a Jupyter notebook for a quick start:
 main.ipynb
 ```
 
-### 🔑 Input Parameters
-
-We briefly describe the key input parameters of the `KernelPointProcess` in `main.ipynb`.
-
-- **`time_step_train`, `time_step_val`, `time_step_test`**  
-  These parameters define the number of historical events used as input during training, validation, and testing, respectively. In our implementation, both the **ST-NKF** model and the **limited-history ETAS** model take as input a fixed number of the most recent events. The input length is determined by the auxiliary window size of each earthquake catalog:
-
-  ```
-  ComCat: 14933  
-  SaltonSea: 2144  
-  SanJac: 1672  
-  WHITE: 2196  
-  SCEDC_2.0: 12373  
-  SCEDC_2.5: 4242  
-  SCEDC_3.0: 1142  
-  ```
-
-- **`temporal_id`, `spatial_id`, `kappa_id`**  
-  These parameters specify the formulation of the three kernel components:
-  - Temporal kernel  
-  - Spatial kernel  
-  - Productivity function  
-
-
-- **`global_m0`**  
-  The magnitude threshold (cutoff magnitude) of the earthquake catalog.
-
-- **`area`**  
-  The spatial area of the study region.
-
-- **`size_layer`**  
-  The number of layers in the neural network.
-
-- **`size_nn`**  
-  The number of neurons in each hidden layer.
-
 ---
 
-### 🏗️ Initialize Model
+
+## 🏗️ Initialize Model
 
 ```python
 model = KernelPointProcess(
@@ -173,78 +125,73 @@ model = KernelPointProcess(
 )
 ```
 
----
 
-## 🚀 Running Steps
+We briefly describe the key input parameters of the `KernelPointProcess`.
 
-### 🧩 Step 1: Select Dataset
+- **`time_step_train`, `time_step_val`, `time_step_test`**  
+  These parameters define the number of historical events used during training, validation, and testing. Both **ST-NKF** and the **limited-history ETAS** model use a fixed number of the most recent events as input. The input length is determined by the auxiliary window size of each earthquake catalog:
 
-Set the dataset name in the notebook:
+  ```
+  ComCat: 14933
+  SaltonSea: 2144
+  SanJac: 1672
+  WHITE: 2196
+  SCEDC_2.0: 12373
+  SCEDC_2.5: 4242
+  SCEDC_3.0: 1142
+  ```
 
-```python
-dataset_name = "ComCat"
-```
+- **`temporal_id`, `spatial_id`, `kappa_id`**  
+  These parameters specify whether the temporal kernel, spatial kernel, and productivity function are implemented using empirical ETAS formulations or neural networks.
 
-Available datasets:
+  | Configuration | Model |
+  |--------------|-------|
+  | `"empirical"` | Empirical ETAS component |
+  | `"neural"` | Neural component |
 
-```python
-["ComCat", "SaltonSea", "SanJac", "WHITE", "SCEDC_20", "SCEDC_25", "SCEDC_30"]
-```
+  Setting all three parameters to `"empirical"` reproduces the ETAS model, while setting all three to `"neural"` reproduces **ST-NKF**. Mixed configurations are also supported, allowing empirical and neural components to be freely combined for ablation studies.
 
----
+### Examples
 
-### 🧠 Step 2: Select Components
-
-The model consists of three components:
-
-- **Temporal kernel** (`temporal_id`)
-- **Spatial kernel** (`spatial_id`)
-- **Productivity function** (`kappa_id`)
-
-Each component supports:
-
-- `"empirical"` — empirical kernel in ETAS model  
-- `"neural"` — neural kernel  
-
----
-
-### 🔧 Example Configurations
-
-#### ETAS (Fully Empirical)
+#### ETAS
 
 ```python
 temporal_id = "empirical"
-spatial_id = "empirical"
-kappa_id   = "empirical"
+spatial_id  = "empirical"
+kappa_id    = "empirical"
 ```
 
-#### ST-NKF (Fully Neural)
+#### ST-NKF
 
 ```python
 temporal_id = "neural"
-spatial_id = "neural"
-kappa_id   = "neural"
+spatial_id  = "neural"
+kappa_id    = "neural"
 ```
 
-#### Hybrid Model (Example)
+#### Hybrid
 
 ```python
 temporal_id = "neural"
-spatial_id = "empirical"
-kappa_id   = "neural"
+spatial_id  = "empirical"
+kappa_id    = "neural"
 ```
+
+
+- **`global_m0`**  
+  The magnitude threshold (cutoff magnitude) of the earthquake catalog.
+
+- **`area`**  
+  The spatial area of the study region.
+
+- **`size_layer`**  
+  The number of layers in the neural network.
+
+- **`size_nn`**  
+  The number of neurons in each hidden layer.
 
 ---
 
-### ▶️ Step 3: Run the Notebook
-
-Run all cells in:
-
-```bash
-main.ipynb
-```
-
----
 
 
 
@@ -258,26 +205,26 @@ We adopt multiple datasets from EarthquakeNPP to evaluate the proposed ST-NKF mo
 - Source: USGS Advanced National Seismic System (ANSS) catalog  
 - Region: California  
 - Dataset: `ComCat_25`  
-- Magnitude threshold: Mw ≥ 2.5  
+- Magnitude threshold: M ≥ 2.5  
 
 #### SCEDC
 - Source: Southern California Earthquake Data Center (SCEDC)  
 - Datasets:
-  - `SCEDC_20` (Mw ≥ 2.0)  
-  - `SCEDC_25` (Mw ≥ 2.5)  
-  - `SCEDC_30` (Mw ≥ 3.0)  
+  - `SCEDC_20` (M ≥ 2.0)  
+  - `SCEDC_25` (M ≥ 2.5)  
+  - `SCEDC_30` (M ≥ 3.0)  
 
 #### QTM (Template Matching Catalog)
 - High-resolution catalog constructed via waveform template matching  
 - Regions:
   - `SanJac_10` (San Jacinto fault zone)  
   - `SaltonSea_10`  
-- Magnitude threshold: Mw ≥ 1.0  
+- Magnitude threshold: M ≥ 1.0  
 
 #### WHITE
 - High-resolution catalog focusing on the San Jacinto fault region  
 - Dataset: `WHITE_06`  
-- Magnitude threshold: Mw ≥ 0.6  
+- Magnitude threshold: M ≥ 0.6  
 
 
 ---
@@ -299,9 +246,9 @@ The temporal splits of each earthquake catalog are summarized below:
 | Catalog      | Auxiliary Start | Training Start | Validation Start | Testing Start | Testing End |
 |-------------|----------------|----------------|------------------|---------------|-------------|
 | ComCat      | 1971-01-01     | 1981-01-01     | 1998-01-01       | 2007-01-01    | 2020-01-17  |
-| SCEDC_2.0   | 1981-01-01     | 1985-01-01     | 2005-01-01       | 2014-01-01    | 2020-01-01  |
-| SCEDC_2.5   | 1981-01-01     | 1985-01-01     | 2005-01-01       | 2014-01-01    | 2020-01-01  |
-| SCEDC_3.0   | 1981-01-01     | 1985-01-01     | 2005-01-01       | 2014-01-01    | 2020-01-01  |
+| SCEDC_20   | 1981-01-01     | 1985-01-01     | 2005-01-01       | 2014-01-01    | 2020-01-01  |
+| SCEDC_25   | 1981-01-01     | 1985-01-01     | 2005-01-01       | 2014-01-01    | 2020-01-01  |
+| SCEDC_30   | 1981-01-01     | 1985-01-01     | 2005-01-01       | 2014-01-01    | 2020-01-01  |
 | SanJac      | 2008-01-01     | 2009-01-01     | 2014-01-01       | 2016-01-01    | 2018-01-01  |
 | SaltonSea   | 2008-01-01     | 2009-01-01     | 2014-01-01       | 2016-01-01    | 2018-01-01  |
 | WHITE       | 2008-01-01     | 2009-01-01     | 2014-01-01       | 2017-01-01    | 2021-01-01  |
@@ -312,14 +259,13 @@ For detailed preprocessing procedures, please refer to the EarthquakeNPP GitHub 
 
 ### Additional Processing: Spatial Perturbation
 
-In this work, we further introduce a small spatial perturbation to events that share identical locations in the catalog. Such duplicated locations can lead to numerical instability in spatial kernel estimation for neural models. To address this issue, we add a small uniform random perturbation to the longitude and latitude of duplicated events.
+In this work, we introduce a small spatial perturbation to events that share identical locations in the catalog. Such duplicated locations can lead to numerical instability in spatial kernel estimation for neural models. To address this issue, we add a small uniform random perturbation to the x and y of duplicated events.
 
-- Noise range: ±0.5 km 
-- Applied only to events with identical spatial coordinates  
-- Repeated until all duplicated locations are removed  
-
----
-
+- Noise range: ±0.5 km
+- Applied only to events with identical spatial coordinates
+- Repeated until all duplicated locations are removed
+- A fixed random seed is used to ensure reproducibility
+- The complete preprocessing implementation is provided in `Data processing.ipynb`
 
 
 ## ⏱️ Computational Environment
@@ -339,3 +285,48 @@ The table below summarizes the computational time (in minutes) for both ST-NKF a
 |--------------|--------:|----------:|-------:|------:|---------:|---------:|---------:|
 |    ST-NKF    | 86.40   | 14.82     | 3.30   | 10.76 | 141.69   | 24.38    | 2.05     |
 |    ETAS      | 12.14   | 2.14      | 0.86   | 2.71  | 18.53    | 4.70     | 1.33     |
+
+
+### Reproducibility Across Random Seeds
+
+To evaluate the robustness of **ST-NKF**, we independently trained the model three times using different random seeds (`1`, `2`, and `3`). The table below reports the total, temporal, and spatial log-likelihoods on the test sets for each earthquake catalog.
+
+| Dataset | Seed | Total | Temporal | Spatial |
+|---------|:----:|------:|---------:|--------:|
+| SCEDC_20 | 1 | -5.0757 | 2.5327 | -7.6084 |
+|  | 2 | -5.0823 | 2.5435 | -7.6259 |
+|  | 3 | -5.0625 | 2.5518 | -7.6142 |
+| SCEDC_25 | 1 | -5.5191 | 2.1053 | -7.6245 |
+|  | 2 | -5.5391 | 2.1037 | -7.6428 |
+|  | 3 | -5.5559 | 2.0873 | -7.6432 |
+| SCEDC_30 | 1 | -5.9918 | 1.7407 | -7.7324 |
+|  | 2 | -5.9936 | 1.7514 | -7.7450 |
+|  | 3 | -5.9278 | 1.8031 | -7.7309 |
+| ComCat | 1 | -7.0619 | 1.4242 | -8.4861 |
+|  | 2 | -7.0590 | 1.4233 | -8.4823 |
+|  | 3 | -7.0589 | 1.4143 | -8.4732 |
+| SaltonSea | 1 | -0.1638 | 2.2905 | -2.4543 |
+|  | 2 | -0.1642 | 2.3184 | -2.4826 |
+|  | 3 | -0.1946 | 2.3003 | -2.4949 |
+| SanJac | 1 | -4.4820 | 1.1185 | -5.6005 |
+|  | 2 | -4.4922 | 1.1077 | -5.5998 |
+|  | 3 | -4.4831 | 1.1122 | -5.5954 |
+| WHITE | 1 | -2.3940 | 2.0252 | -4.4192 |
+|  | 2 | -2.3886 | 2.0256 | -4.4142 |
+|  | 3 | -2.3977 | 2.0289 | -4.4265 |
+
+
+### Figure Reproduction
+
+We also provide the scripts used to generate the figures presented in the paper.
+
+```text
+plot CDF.ipynb
+plot comparison.ipynb
+plot pattern.ipynb
+plot regression.ipynb
+plot spatial information gain.ipynb
+plot temporal information gain.ipynb
+```
+
+These notebooks reproduce the main figures used in the manuscript, including CDF visualization, model comparison, seismicity patterns, regression analysis, and temporal/spatial information gain evaluation.
