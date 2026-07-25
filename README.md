@@ -151,7 +151,7 @@ We briefly describe the key input parameters of the `KernelPointProcess`.
 
   Setting all three parameters to `"empirical"` reproduces the ETAS model, while setting all three to `"neural"` reproduces **ST-NKF**. Mixed configurations are also supported, allowing empirical and neural components to be freely combined for ablation studies.
 
-### Examples
+For example:
 
 #### ETAS
 
@@ -195,7 +195,7 @@ kappa_id    = "neural"
 
 
 
-## Datasets
+## 📊 Datasets
 
 This study is conducted based on the benchmark datasets provided by the [EarthquakeNPP](https://github.com/ss15859/EarthquakeNPP), which is designed for evaluating Neural Point Process (NPP) models on earthquake forecasting tasks.
 
@@ -227,9 +227,6 @@ We adopt multiple datasets from EarthquakeNPP to evaluate the proposed ST-NKF mo
 - Magnitude threshold: M ≥ 0.6  
 
 
----
-
-### 📂 Data Usage in This Work
 
 The earthquake catalogs provided by **EarthquakeNPP** have undergone standardized preprocessing procedures, including:
 
@@ -239,7 +236,7 @@ The earthquake catalogs provided by **EarthquakeNPP** have undergone standardize
 
 ---
 
-### 📊 Dataset Splits
+### Dataset Splits
 
 The temporal splits of each earthquake catalog are summarized below:
 
@@ -268,7 +265,9 @@ In this work, we introduce a small spatial perturbation to events that share ide
 - The complete preprocessing implementation is provided in `Data processing.ipynb`
 
 
-## ⏱️ Computational Environment
+## ⏱️ Main results
+
+### Computational Environment
 
 All experiments were conducted on a workstation equipped with:
 
@@ -277,7 +276,7 @@ All experiments were conducted on a workstation equipped with:
 
 ---
 
-## 📊 Runtime
+### Runtime
 
 The table below summarizes the computational time (in minutes) for both ST-NKF and ETAS models.
 
