@@ -264,6 +264,7 @@ In this work, we introduce a small spatial perturbation to events that share ide
 - A fixed random seed is used to ensure reproducibility
 - The complete preprocessing implementation is provided in `Data processing.ipynb`
 
+---
 
 ## ⏱️ Main results
 
